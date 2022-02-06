@@ -2,28 +2,47 @@
 
 
 #include "MyAIController.h"
-#include "NavigationSystem.h" // UNavigationSystemV1을 위한 헤더
+#include "NavigationSystem.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+
+// Behavior Tree 및 Blackboard 관련 헤더 추가
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 AMyAIController::AMyAIController()
 {
-
+	// Behavior Tree 에셋 불러오기
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BT(TEXT("BehaviorTree'/Game/AI/BT_MyCharacter.BT_MyCharacter'"));
+	if (BT.Succeeded()) {
+		BehaviorTree = BT.Object;
+	}
+	// Blackboard 에셋 불러오기
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BD(TEXT("BlackboardData'/Game/AI/BB_MyCharacter.BB_MyCharacter'"));
+	if (BD.Succeeded()) {
+		BlackboardData = BD.Object;
+	}
 }
 
 void AMyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	// RandomMove함수를 주기적으로 실행하는 Timer
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyAIController::RandomMove, 3.f, true);
+	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AMyAIController::RandomMove, 3.f, true);
+
+	// TODO:
+	if (UseBlackboard(BlackboardData, Blackboard)) {
+		if (RunBehaviorTree(BehaviorTree)) {
+
+		}
+	}
 }
 
 void AMyAIController::OnUnPossess() 
 {
 	Super::OnUnPossess();
 
-	// TimerHandle에 설정된 함수 루틴이 clear
-	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+	//GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 }
 
 void AMyAIController::RandomMove()

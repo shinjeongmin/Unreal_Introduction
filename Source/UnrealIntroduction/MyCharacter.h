@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackEnd);
+
 UCLASS()
 class UNREALINTRODUCTION_API AMyCharacter : public ACharacter
 {
@@ -30,6 +32,9 @@ public:
 
 	void Attack();
 	void AttackCheck();
+
+	// 델리게이트 선언
+	FOnAttackEnd OnAttackEnd;
 
 	void UpDown(float Value);
 	void LeftRight(float Value);
